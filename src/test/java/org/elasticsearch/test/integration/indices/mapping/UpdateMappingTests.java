@@ -10,6 +10,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import static org.elasticsearch.common.io.Streams.copyToStringFromClasspath;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
@@ -56,4 +57,26 @@ public class UpdateMappingTests extends AbstractNodesTests {
         assertThat(response.count(), equalTo(recCount));
     }
 
+    @Test
+    public void reproducableMappingDefinitions() throws Exception {
+        client.admin().indices().prepareDelete().execute().actionGet();
+
+        client.admin().indices().prepareCreate("test")
+                .setSettings(
+                        ImmutableSettings.settingsBuilder()
+                                .put("index.number_of_shards", 2)
+                                .put("index.number_of_replicas", 0)
+                ).execute().actionGet();
+        client.admin().cluster().prepareHealth().setWaitForGreenStatus().execute().actionGet();
+
+        String mapping = copyToStringFromClasspath("/org/elasticsearch/test/unit/index/query/mapping.json");
+
+        client.admin().indices().preparePutMapping("test")
+                .setType("child")
+                .setSource(mapping).execute().actionGet();
+
+        // client.admin().indices().prepareGetMapping("test").execute().actionGet();
+
+        assertThat(response.body(), equalTo(mapping));
+    }
 }
