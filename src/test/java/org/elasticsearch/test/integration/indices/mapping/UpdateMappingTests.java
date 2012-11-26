@@ -1,6 +1,7 @@
 package org.elasticsearch.test.integration.indices.mapping;
 
 import org.elasticsearch.action.admin.indices.refresh.RefreshResponse;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.count.CountResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.settings.ImmutableSettings;
@@ -75,8 +76,9 @@ public class UpdateMappingTests extends AbstractNodesTests {
                 .setType("child")
                 .setSource(mapping).execute().actionGet();
 
+        GetResponse response = client.prepareGet("test", "child", "_mapping").execute().actionGet();
         // client.admin().indices().prepareGetMapping("test").execute().actionGet();
 
-        assertThat(response.body(), equalTo(mapping));
+        assertThat(response.source(), equalTo(mapping));
     }
 }
