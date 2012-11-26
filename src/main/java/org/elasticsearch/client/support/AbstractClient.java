@@ -186,6 +186,16 @@ public abstract class AbstractClient implements InternalClient {
     }
 
     @Override
+    public GetRequestBuilder prepareGetMapping() {
+        return new GetRequestBuilder(this, null);
+    }
+
+    @Override
+    public GetRequestBuilder prepareGetMapping(String index, String type) {
+        return prepareGet().setIndex(index).setType(type).setId(id);
+    }
+
+    @Override
     public ActionFuture<MultiGetResponse> multiGet(final MultiGetRequest request) {
         return execute(MultiGetAction.INSTANCE, request);
     }

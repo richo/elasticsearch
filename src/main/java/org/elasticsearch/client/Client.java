@@ -294,6 +294,16 @@ public interface Client {
     GetRequestBuilder prepareGet(String index, @Nullable String type, String id);
 
     /**
+     * Gets the mapping definition that is currently on an index or type.
+     */
+    GetRequestBuilder prepareGetMapping();
+
+    /**
+     * Gets the mapping definition that is currently on an index or type.
+     */
+    GetRequestBuilder prepareGetMapping(String index, @Nullable String type);
+
+    /**
      * Multi get documents.
      */
     ActionFuture<MultiGetResponse> multiGet(MultiGetRequest request);
